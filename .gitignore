@@ -47,3 +47,11 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# other stuff
+SourceFile.R
+temp/
+results/
+*.html
+*.out
+*.pdf

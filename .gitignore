@@ -52,6 +52,7 @@ rsconnect/
 SourceFile.R
 temp/
 results/
+_test/
 *.html
 *.out
 *.pdf

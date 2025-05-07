@@ -57,7 +57,11 @@ covars = c("f.eid", "f.31.0.0","f.53.0.0","f.53.1.0","f.2724.0.0","f.2724.1.0",
            "f.21000.0.0","f.21022.0.0","f.22000.0.0",paste0("f.22009.0.",1:10), "f.22021.0.0")
 table(is.element(covars,myAnnot$colNm))
 
-myAnnot = myAnnot[colNm %in% c(exposure,covars),]
+CAD_diagnoses = c(paste0("f.41202.0.",c(0:79)), 
+                  paste0("f.41204.0.",c(0:209)),
+                  paste0("f.41270.0.",c(0:258)))
+
+myAnnot = myAnnot[colNm %in% c(exposure,covars,CAD_diagnoses),]
 
 x = myAnnot[,colNR]
 myTab_cross <- fread(UKB_phenotypes, header=TRUE, sep="\t",select = x)
@@ -67,7 +71,10 @@ names(myTab_cross) = c("ID","sex","date_init","date_FU","menopause_init","menopa
                        paste("medication_FU",1:48,sep="_"),
                        "ancestry","age","GenotypeBatch",
                        paste("PC",1:10,sep="_"),
-                       "kinship","TC_init","TC_FU")
+                       "kinship","TC_init","TC_FU",
+                       paste("diagnoses_main",1:80,sep="_"),
+                       paste("diagnoses_sec",1:210,sep="_"),
+                       paste("diagnoses_any",1:259,sep="_"))
 
 save(myTab_cross, file = paste0(data_QC,"01_Prep_01_UKB_unfiltered.RData"))
 load(paste0(data_QC,"01_Prep_01_UKB_unfiltered.RData"))
@@ -103,14 +110,39 @@ for(i in 1:length(myMeds)){
 }
 myTab[,get("myMeds"):=NULL]
 dim(myTab)
+table(myTab$lipidLow_init)
+table(myTab$lipidLow_FU)
+
+#' Get CAD: 
+#' 
+#' For CAD definition I use ICD-10 codes I20-I25
+#' 
+codingTable = fread(UKB_CAD_Coding)
+
+myDiag1 = names(myTab)[grep("diagnoses_main",names(myTab))]
+myDiag2 = names(myTab)[grep("diagnoses_sec",names(myTab))]
+myDiag3 = names(myTab)[grep("diagnoses_any",names(myTab))]
+myDiag = c(myDiag1,myDiag2,myDiag3)
+
+codingTable = codingTable[grepl("I20",meaning) | grepl("I21",meaning) | 
+                            grepl("I22",meaning) | grepl("I23",meaning) | 
+                            grepl("I24",meaning) | grepl("I25",meaning),]
+codingTable = codingTable[selectable == "Y",]
+CAD_codes = codingTable[,coding]
+
+myTab[,CAD := 0]
+
+for(i in 1:length(myDiag)){
+  #i=1
+  myTab[get(myDiag[i]) %in% CAD_codes,CAD := 1]
+}
+myTab[,get("myDiag"):=NULL]
+dim(myTab)
+table(myTab$CAD,myTab$sex)
 
 #' Check for consent
 ToExclude = fread(gsub("ukb672224.tab","withdraw98032_19.txt",UKB_phenotypes))
 table(is.element(myTab$ID,ToExclude$V1))
-
-#' Filter for no NA in TC baseline data
-myTab = myTab[!is.na(TC_init),]
-myTab[,table(is.na(TC_FU))]
 
 #' Check menopausal status - restrict to women who are sure (0 - no, 1 - yes)
 myTab[,table(sex,menopause_init)]
@@ -118,18 +150,30 @@ myTab[,table(sex,menopause_init)]
 myTab[,table(sex,menopause_init)]
 myTab[,table(menopause_init,menopause_FU)]
 myTab[sex==1, group := "men"]
-myTab[sex==0 & menopause_init==0, group := "premenopausal"]
-myTab[sex==0 & menopause_init==1, group := "postmenopausal"]
+myTab[sex==0 & menopause_init==0 & age <=60, group := "premenopausal"]
+myTab[sex==0 & menopause_init==1 & age >=51, group := "postmenopausal"]
 myTab[group=="postmenopausal" & menopause_FU!=1, group := NA]
+myTab[,table(CAD,group)]
 
 #' Check genotyping batch
 myTab[,table(GenotypeBatch)]
 myTab[,Array := "Axiom"]
 myTab[GenotypeBatch<0,Array := "BiLEVE"]
-myTab[,table(Array,sex)]
+myTab[,table(Array,group)]
 
-# save filtered data
-save(myTab, file = paste0(data_QC,"01_Prep_01_UKB_filtered_Ancestry_Kinship_Meds.RData"))
+#' Save CAD data
+save(myTab, file = paste0(data_QC,"01_Prep_01_UKB_filtered_CAD.RData"))
+write.table(myTab$ID,file = paste0(data_QC,"/01_Prep_01_SampleList_CAD.txt"), 
+            col.names = F, row.names = F, quote = F)
+load(paste0(data_QC,"01_Prep_01_UKB_filtered_CAD.RData"))
+
+#' Filter for no NA in TC baseline data
+myTab = myTab[!is.na(TC_init),]
+myTab[,table(is.na(TC_FU))]
+
+#' Save TC data
+save(myTab, file = paste0(data_QC,"01_Prep_01_UKB_filtered_TC.RData"))
+load(paste0(data_QC,"01_Prep_01_UKB_filtered_TC.RData"))
 
 #' ## GP data set ####
 loaded1 = load(UKB_EHR)
@@ -312,7 +356,7 @@ table(myTab6$exposure_value>mean(myTab6$exposure_value,na.rm=T) + 8 * sd(myTab6$
 #' # Save data ####
 #' ***
 save(myTab6, myTab7, file = paste0(data_QC,"/01_Prep_01_UKB_GP_TC_GLGC.RData"))
-write.table(myTab7$ID,file = paste0(data_QC,"/01_Prep_01_SampleList_TC_GLGC.txt"), 
+write.table(myTab7$ID,file = paste0(data_QC,"/01_Prep_01_SampleList_TC.txt"), 
             col.names = F, row.names = F, quote = F)
 
 #' # SessionInfo ####

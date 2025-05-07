@@ -219,6 +219,12 @@ myTab7[ID %in% myTab7_pre$ID,flag_pre := T]
 #' - pre-menopausal women:   3,720    -->  2,365
 #' 
 save(myTab6, myTab7, file = paste0(data_QC,"/01_Prep_02_UKB_GP_noLipidLoweringSubSet.RData"))
+write.table(myTab7[sex==1,ID],file = paste0(data_QC,"/01_Prep_02_SampleList_TC_men.txt"), 
+            col.names = F, row.names = F, quote = F)
+write.table(myTab7[sex==2,ID],file = paste0(data_QC,"/01_Prep_02_SampleList_TC_women.txt"), 
+            col.names = F, row.names = F, quote = F)
+write.table(myTab7[,ID],file = paste0(data_QC,"/01_Prep_02_SampleList_TC_combined.txt"), 
+            col.names = F, row.names = F, quote = F)
 
 #' # SessionInfo ####
 #' ***

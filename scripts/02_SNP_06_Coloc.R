@@ -192,15 +192,25 @@ save(SNPList3,file = "../results/02_SNP_06_SNPListColoc_complete.RData")
 
 SNPList3 = SNPList3[PP.H4.abf>0.8]
 save(SNPList3,file = "../results/02_SNP_06_SNPListColoc_filtered.RData")
+save(SNPList,file = "../results/02_SNP_06_SNPList_CAD.RData")
 write.table(unique(SNPList3$rsID),file = paste0(data_QC,"/02_SNP_06_SNPListColoc_filtered.txt"), 
+            col.names = F, row.names = F, quote = F)
+write.table(unique(SNPList$rsID),file = paste0(data_QC,"/02_SNP_06_SNPListColoc_uniqueIDs.txt"), 
             col.names = F, row.names = F, quote = F)
 
 call1 = paste0("plink2", 
                " --pfile ",data_QC, "/02_SNP_01_UKB_TC_GLGC_merged",
                " --extract ",data_QC,"/02_SNP_06_SNPListColoc_filtered.txt", 
-               " --keep-fam ",data_QC,"/01_Prep_01_SampleList_TC_GLGC.txt",
+               " --keep-fam ",data_QC,"/01_Prep_01_SampleList_TC.txt",
                " --make-pgen --out ",data_QC,"/02_SNP_06_UKB_TC_GLGC_coloc")
 print(call1)
+
+call2 = paste0("plink2", 
+               " --pfile ",data_QC, "/02_SNP_01_UKB_TC_GLGC_merged",
+               " --extract ",data_QC,"/02_SNP_06_SNPListColoc_uniqueIDs.txt", 
+               " --keep-fam ",data_QC,"/01_Prep_01_SampleList_CAD.txt",
+               " --make-pgen --out ",data_QC,"/02_SNP_06_UKB_CAD")
+print(call2)
 
 #' # Session Info ####
 #' ***

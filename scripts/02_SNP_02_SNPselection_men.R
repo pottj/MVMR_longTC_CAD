@@ -311,7 +311,7 @@ write.table(unique(SNPList$rsID),file = paste0(data_QC,"/02_SNP_02_SNPListMen.tx
 call1 = paste0("plink2", 
                " --pfile ",data_QC, "/02_SNP_01_UKB_TC_GLGC_merged",
                " --extract ",data_QC,"/02_SNP_02_SNPListMen.txt", 
-               " --keep-fam ",data_QC,"/01_Prep_01_SampleList_TC_GLGC.txt",
+               " --keep-fam ",data_QC,"/01_Prep_02_SampleList_TC_men.txt",
                " --make-pgen --out ",data_QC,"/02_SNP_02_UKB_TC_GLGC_men")
 print(call1)
 

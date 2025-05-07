@@ -89,7 +89,7 @@ dumTab = foreach(i = 1:length(myCHR))%do%{
                  " 'ref-last'", 
                  " --sample ",UKB_SNP_data,"ukb22828_c",myCHR[i],"_b0_v3_s487160.sample",
                  " --chr ", myCHR[i],
-                 " --keep-fam ",data_QC,"/01_Prep_01_SampleList_TC_GLGC.txt",
+                 " --keep-fam ",data_QC,"/01_Prep_01_SampleList_CAD.txt",
                  " --extract ",data_QC,"/02_SNP_01_SNPList_GLGC.txt", 
                  " --mach-r2-filter 0.8 2",
                  " --maf 0.01", 

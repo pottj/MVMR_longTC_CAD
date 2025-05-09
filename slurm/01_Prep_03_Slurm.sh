@@ -85,6 +85,10 @@ rm Rplots.pdf
 
 R CMD BATCH --vanilla ../scripts/01_Prep_13_nonGeneticModels_wrapUp.R ../scripts/01_Prep_13_nonGeneticModels_wrapUp.R.out
 
+R CMD BATCH --vanilla ../scripts/01_Prep_14_Plots_CAD.R ../scripts/01_Prep_14_Plots_CAD.R.out
+cp Rplots.pdf 01_Prep_14_Rplots.pdf
+rm Rplots.pdf
+
 ###############################################################
 ### You should not have to change anything below this line ####
 ###############################################################

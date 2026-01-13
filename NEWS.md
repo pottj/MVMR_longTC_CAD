@@ -1,5 +1,24 @@
 # NEWS
 
+## 13/01/2025
+
+- Long break because life
+- INTERVAL replication done
+- all main analyses done (trajGWAS screening, GAMLSS effect estimation, CAD outcome)
+- clean up in repository
+
+## 09/06/2025
+
+- Thought: significant hits in "all" population, which are lost in the subpopulation (young and old). Are these hits just lost because of power or are they undetected gene - environment interaction (e.g. menopause). 
+- Idea: test these hits in cross-sectional model with interaction term? 
+- If possible (and gene is some nice protein available in the UKB PPP): check for interaction on protein level
+
+## 06/06/2025
+
+- Long break because of writing and submitting some funding proposal
+- Project proposal to INTERVAL to have some replication for young women
+- Run trajGWAS to get better genome-wide picture
+
 ## 17/12/2024
 
 - Data prep: update to extract CAD as well 

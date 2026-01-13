@@ -13,26 +13,30 @@ For men, I use the same age-threshold. For men between 50 and 60, I randomly put
 
 ## Data sets
 
-- **exposure data**: UKB baseline, UKB follow-up, and EHR matched data on TC (UKB application number 98032)
+- **exposure data**: 
+    - discovery: UKB baseline, UKB follow-up, and EHR matched data on TC (UKB application number 98032)
+    - replication: INTERVAL
 - **outcome data**: [Agaram et al. (2022)](https://hugeamp.org/dinspector.html?dataset=Aragam2022_CAD_EU), CAD sex-stratified (EUR only) 
-- **instrument selection**: [Kanoni et al. (2022)](https://csg.sph.umich.edu/willer/public/glgc-lipids2021/results/sex_and_ancestry_specific_summary_stats/), TC sex-stratified (EUR only)
+- **instrument selection**: 
+    - trajGWAS using the UKB data
+    - GLGC hits per sex [Kanoni et al. (2022)](https://csg.sph.umich.edu/willer/public/glgc-lipids2021/results/sex_and_ancestry_specific_summary_stats/), TC sex-stratified (EUR only + only estimates for the mean, not the variability)
 
 ## Analysis plans
 
-1) Data preparation: 
-    - get the exposure phenotype data from the UKB and the EHR 
-    - specify the subsets for pre- and postmenopausal women
-    - test the none-genetic longitudinal model, adjusted for age and lipid-lowering medication, including random effects on the intercept, slope, and variability
-2) SNP preparation: 
-    - select genome-wide significant and independent SNPs per sex
-    - check for overlapping loci and test if they have a shared signal (colocalization)
-    - extract gene dosages of selected instruments from the UKB
-3) GAMLSS: 
-    - **main**: run regression model with SNP - time interaction for men and women in their age groups
-    - **noSlope**: run regression model without SNP - time interaction for men and women in their age 
-4) MVMR:
-    - run MVMR and sensitivity checks 
-5) Plots and figures: 
+1) UKB analyses (discovery): 
+    - prep data (get exposure, define groups)
+    - trajGWAS screening (saddle point approximation, SPA, just p-values)
+    - get candidate SNPs (significant in screening or GLGC hits)
+    - trajGWAS effect estimation for candidate SNPs
+    - GAMLSS effect estimation for candidate SNPs
+2) INTERVAL analyses (replication): 
+    - get data (get exposure, define groups)
+    - trajGWAS effect estimation for candidate SNPs
+    - GAMLSS effect estimation for candidate SNPs
+3) MVMR:
+    - MVMRs per group, using either trajGWAS or GLGC IVs and estimates by trajGWAS or GAMLSS
+    - MVMRs per sex, combining the age groups, using either trajGWAS or GLGC IVs and estimates by trajGWAS or GAMLSS
+4) Plots and figures: 
     - create all relevant plots and figures of the project
     
 ## Abbreviations

@@ -64,7 +64,7 @@ dumTab1 = foreach(i = 1:length(mySettings))%do%{
   
   res0 = mr_mvivw(mvmr_obj,nx = tab1[setting == mySettings[i],sampleSize]) 
   
-  res1 = data.table(MR_model = rep("multivariate",2),
+  res0b = data.table(MR_model = rep("multivariate",2),
                     exposure = c("TC mean","TC variability"),
                     outcome = rep(res0@Outcome,2),
                     NR_SNPs_total = rep(res0@SNPs,2),
@@ -75,7 +75,7 @@ dumTab1 = foreach(i = 1:length(mySettings))%do%{
                     condFstat = c(res0@CondFstat),
                     HeteroStat = rep(res0@Heter.Stat[1],2),
                     HeteroStat_pval = rep(res0@Heter.Stat[2],2))
-  res1
+  res0b
  
   # create MR objects
   filt1 = dataX$mean_pval < 5e-8
@@ -83,19 +83,34 @@ dumTab1 = foreach(i = 1:length(mySettings))%do%{
   
   mr_obj1 = mr_input(bx = as.matrix(dataX[filt1,c(9,12)])[,1],
                      bxse = as.matrix(dataX[filt1,c(10,13)])[,1],
-                     by = dataY$male_beta[filt1], 
+                     by = dataY$male_beta[filt1],
                      byse = dataY$male_se[filt1],
                      exposure = "mean",
-                     outcome = "CAD_males") 
+                     outcome = "CAD_males")
   mr_obj2 = mr_input(bx = as.matrix(dataX[filt2,c(9,12)])[,2],
                      bxse = as.matrix(dataX[filt2,c(10,13)])[,2],
-                     by = dataY$male_beta[filt2], 
+                     by = dataY$male_beta[filt2],
                      byse = dataY$male_se[filt2],
+                     exposure = "variability",
+                     outcome = "CAD_males")
+
+  mr_obj3 = mr_input(bx = as.matrix(dataX[,c(9,12)])[,1],
+                     bxse = as.matrix(dataX[,c(10,13)])[,1],
+                     by = dataY$male_beta, 
+                     byse = dataY$male_se,
+                     exposure = "mean",
+                     outcome = "CAD_males") 
+  mr_obj4 = mr_input(bx = as.matrix(dataX[,c(9,12)])[,2],
+                     bxse = as.matrix(dataX[,c(10,13)])[,2],
+                     by = dataY$male_beta, 
+                     byse = dataY$male_se,
                      exposure = "variability",
                      outcome = "CAD_males") 
   
-  res2 = mr_ivw(mr_obj1)
-  res3 = mr_ivw(mr_obj2)
+  res1 = mr_ivw(mr_obj1)
+  res2 = mr_ivw(mr_obj2)
+  res3 = mr_ivw(mr_obj3)
+  res4 = mr_ivw(mr_obj4)
   
   res4 = data.table(MR_model = rep("univariate",2),
                     exposure = c("TC mean","TC variability"),

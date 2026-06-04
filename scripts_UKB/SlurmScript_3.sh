@@ -13,13 +13,13 @@
 ## Enter the wall-clock time limit for your jobs.
 ## If jobs reach this limit they are automatically killed.
 ## Maximum value 36:00:00.
-#SBATCH --time=12:00:00
+#SBATCH --time=00:30:00
 
 ## For single-core jobs, this number should be '1'. 
 ## If your job has built-in parallelism, eg using OpenMP or 
 ## R's foreach() and doParallel(), increase this number as desired.
 ## The maximum value is 76 on icelake; 112 on sapphire
-#SBATCH --cpus-per-task=25
+#SBATCH --cpus-per-task=1
 
 ## Each task is allocated 3.3G (icelake) or 6.7G (icelake-himem) or 4.6G (sapphire)
 ## If this is insufficient, uncomment and edit this line.
@@ -76,7 +76,10 @@ module load R/4.3.1-icelake
 # cp Rplots.pdf 05_ExtractSNPinfo_trajGWAS_RPlots.pdf
 # rm Rplots.pdf
 # R CMD BATCH --vanilla 06_GAMLSS.R 06_GAMLSS.R.out
-R CMD BATCH --vanilla 06_2_GAMLSS_bugfix.R 06_2_GAMLSS_bugfix.R.out
+# R CMD BATCH --vanilla 06_2_GAMLSS_bugfix.R 06_2_GAMLSS_bugfix.R.out
+R CMD BATCH --vanilla 07_getDescriptiveStatistics.R 07_getDescriptiveStatistics.R.out
+cp Rplots.pdf 07_getDescriptiveStatistics.pdf
+rm Rplots.pdf
 
 ###############################################################
 ### You should not have to change anything below this line ####
